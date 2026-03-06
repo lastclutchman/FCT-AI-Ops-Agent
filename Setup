@@ -1,0 +1,151 @@
+# Setup Instructions
+
+## Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
+
+## Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/YOUR_USERNAME/FCT-AI-Ops-Agent.git
+cd FCT-AI-Ops-Agent
+```
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+**What gets installed:**
+- `numpy` - Numerical computing
+- `scikit-learn` - Machine learning (Isolation Forest)
+
+## Running the System
+
+### Run the Demo
+```bash
+python demo.py
+```
+
+**Output:**
+- Console display of 5 scenarios
+- JSON files: `incidents_*.json` with detailed results
+- Learning metrics showing agent improvement
+
+### Use in Your Code
+```python
+from aiops_agent import AIOpsAgent
+
+agent = AIOpsAgent()
+
+# Process metrics
+metrics = {'cpu': 75.5, 'memory': 82.3, 'latency': 250.0}
+report = agent.ingest_metrics(metrics)
+
+# Handle result
+if report:
+    print(f"Incident detected: {report.incident_id}")
+```
+
+## Configuration
+
+### Adjust Detection Sensitivity
+In `aiops_agent.py`:
+```python
+self.anomaly_detector = AnomalyDetector(
+    window_size=100,    # Historical data points to keep
+    sensitivity=2.0     # Lower = more sensitive, higher = less sensitive
+)
+```
+
+### Adjust Escalation Threshold
+In `response_agent.py`:
+```python
+self.escalation_threshold = 0.3  # Escalate if confidence < 30%
+```
+
+## Understanding the Output
+
+### Demo Output
+```
+[Iteration 10] Metrics: CPU=37.8%, Memory=49.6%, Latency=105ms
+  ⚠️  INCIDENT DETECTED: INC-00001
+     - CPU: HIGH (value=37.79, method=iqr)
+     → ACTION: scale_up (confidence=1.0, impact=high)
+```
+
+**Fields:**
+- `Iteration`: Simulation step
+- `CPU/Memory/Latency`: Current metric values
+- `INCIDENT`: Anomaly detected with ID
+- `Severity`: LOW/MEDIUM/HIGH/CRITICAL
+- `Detection method`: Which algorithm detected it
+- `ACTION`: What the system will do
+- `Confidence`: How certain (0.0-1.0)
+
+### Incident JSON Files
+```json
+{
+  "incident_id": "INC-00001",
+  "timestamp": "2025-03-05T...",
+  "anomalies": [
+    {
+      "metric": "memory",
+      "severity": "HIGH",
+      "value": 82.3,
+      "threshold": 75.5,
+      "method": "zscore"
+    }
+  ],
+  "actions_taken": [
+    {
+      "action": "auto_heal",
+      "confidence": 0.80,
+      "reasoning": "Memory spike detected..."
+    }
+  ]
+}
+```
+
+## Troubleshooting
+
+### Import Error: "No module named 'numpy'"
+```bash
+pip install numpy scikit-learn
+```
+
+### Import Error: "No module named 'sklearn'"
+```bash
+pip install scikit-learn
+```
+
+### ModuleNotFoundError
+Make sure you're in the correct directory:
+```bash
+cd FCT-AI-Ops-Agent
+pip install -r requirements.txt
+python demo.py
+```
+
+## System Requirements
+
+- **RAM**: 100MB minimum
+- **CPU**: Any modern processor
+- **Disk**: 50MB for code and dependencies
+- **Python**: 3.8, 3.9, 3.10, 3.11, or 3.12
+
+## Performance
+
+- Detection latency: 1-2ms per metric
+- Memory usage: 5-10MB
+- Demo runtime: 60 seconds
+- Model training: 100ms every 30 samples
+
+## Next Steps
+
+1. Run: `python demo.py`
+2. Review: `incidents_cascading.json` (most complex scenario)
+3. Read: `ARCHITECTURE.md` (how it works)
+4. Explore: Source code in `*.py` files
+
